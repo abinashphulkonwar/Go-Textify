@@ -2,41 +2,59 @@ package handlers
 
 import (
 	"context"
-	"log"
 	"os"
+	"time"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/sas"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/service"
+	errorhandlers "github.com/abinashphulkonwar/go-text-extractor/error-handler"
 )
 
-const URL = "https://mastersimageandtext.blob.core.windows.net/"
+const ACCOUNT_NAME = "mastersimageandtext"
+const URL = "https://" + ACCOUNT_NAME + ".blob.core.windows.net/"
 const CONTAINER_NAME = "peace-and-conflicts-resolution"
 
-func handleError(err error) {
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-}
 func Upload(path string) string {
 
 	data, err := os.ReadFile(path)
-	handleError(err)
+	errorhandlers.HandleError(err)
 	println(string(data))
 
 	ctx := context.Background()
 
 	credential, err := azidentity.NewDefaultAzureCredential(nil)
-	handleError(err)
+
+	errorhandlers.HandleError(err)
 
 	client, err := azblob.NewClient(URL, credential, nil)
-	handleError(err)
-
+	errorhandlers.HandleError(err)
 	println(client.URL())
 
 	_, err = client.UploadBuffer(ctx, CONTAINER_NAME, "blobName", data, &azblob.UploadBufferOptions{})
-	handleError(err)
+	errorhandlers.HandleError(err)
+	now := time.Now()
+	exp := now.Add(time.Minute * 10)
 
-	//	client.ServiceClient().GetSASURL(CONTAINER_NAME, "blobName")
+	info := service.KeyInfo{
+		Start:  to.Ptr(now.UTC().Format(sas.TimeFormat)),
+		Expiry: to.Ptr(exp.UTC().Format(sas.TimeFormat)),
+	}
 
-	return URL + CONTAINER_NAME + "/" + "blobName"
+	serviceClient := client.ServiceClient()
+
+	udc, err := serviceClient.GetUserDelegationCredential(context.TODO(), info, nil)
+	errorhandlers.HandleError(err)
+	sasQueryParams, err := sas.BlobSignatureValues{
+		Protocol:      sas.ProtocolHTTPS,
+		StartTime:     time.Now().UTC().Add(time.Second * -10),
+		ExpiryTime:    time.Now().UTC().Add(15 * time.Minute),
+		Permissions:   to.Ptr(sas.ContainerPermissions{Read: true}).String(),
+		ContainerName: CONTAINER_NAME,
+	}.SignWithUserDelegation(udc)
+
+	errorhandlers.HandleError(err)
+	return URL + CONTAINER_NAME + "/" + "blobName" + "?" + sasQueryParams.Encode()
 }
