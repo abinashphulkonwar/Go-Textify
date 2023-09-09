@@ -1,5 +1,6 @@
 package command
 
 const (
-	INPUT = "input"
+	INPUT  = "input"
+	OUTPUT = "output"
 )
