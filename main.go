@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	command "github.com/abinashphulkonwar/go-text-extractor/Command"
-	"github.com/abinashphulkonwar/go-text-extractor/app"
+	command "github.com/abinashphulkonwar/Textify/Command"
+	"github.com/abinashphulkonwar/Textify/app"
 	"github.com/urfave/cli/v2"
 )
 
@@ -18,10 +18,16 @@ func main() {
 			&cli.StringFlag{
 				Name:    command.INPUT,
 				Value:   "input file path",
-				Aliases: []string{"c"},
+				Aliases: []string{"i"},
 
-				Usage:    "input file path (image JPG, PNG, JPGE)",
-				Required: true,
+				Usage: "input file path (image JPG, PNG, JPGE)",
+			},
+			&cli.StringFlag{
+				Name:        command.OUTPUT,
+				Value:       "output",
+				Aliases:     []string{"o"},
+				Usage:       "input file will be a .txt file with ***new page*** separated the pages",
+				DefaultText: "output",
 			},
 		},
 	}
