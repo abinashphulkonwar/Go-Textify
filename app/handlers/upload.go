@@ -10,7 +10,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/sas"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/service"
-	errorhandlers "github.com/abinashphulkonwar/go-text-extractor/error-handler"
+	errorhandlers "github.com/abinashphulkonwar/Textify/error-handler"
 )
 
 const ACCOUNT_NAME = "mastersimageandtext"
@@ -21,7 +21,6 @@ func Upload(path string) string {
 
 	data, err := os.ReadFile(path)
 	errorhandlers.HandleError(err)
-	println(string(data))
 
 	ctx := context.Background()
 
