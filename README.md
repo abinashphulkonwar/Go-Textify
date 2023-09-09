@@ -1,4 +1,4 @@
-# go-text-extractor
+# Textify
 
 This tool utilizes computer vision to extract text from images.
 
