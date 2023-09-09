@@ -1,8 +1,11 @@
 package app
 
 import (
-	command "github.com/abinashphulkonwar/go-text-extractor/Command"
-	"github.com/abinashphulkonwar/go-text-extractor/app/handlers"
+	"os"
+
+	command "github.com/abinashphulkonwar/Textify/Command"
+	"github.com/abinashphulkonwar/Textify/app/handlers"
+	errorhandlers "github.com/abinashphulkonwar/Textify/error-handler"
 	"github.com/urfave/cli/v2"
 )
 
@@ -11,10 +14,18 @@ func CMDHandler(ctx *cli.Context) error {
 		return nil
 	}
 	input_file_path := ctx.String(command.INPUT)
+	output_file_path := ctx.String(command.OUTPUT)
+
 	if input_file_path == "" {
 		panic("file is emply")
 	}
-	url := handlers.Upload(input_file_path)
-	println(url)
+
+	//	url := handlers.Upload(input_file_path)
+	data, err := os.Open(input_file_path)
+	errorhandlers.HandleError(err)
+	text := handlers.ExtractText(data)
+	//handlers.OutputJson(text, input_file_path)
+
+	handlers.OutputTextFile(text, output_file_path)
 	return nil
 }
