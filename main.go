@@ -17,10 +17,8 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    command.INPUT,
-				Value:   "input file path",
 				Aliases: []string{"i"},
-
-				Usage: "input file path (image JPG, PNG, JPGE)",
+				Usage:   "input file path (image JPG, PNG, JPGE)",
 			},
 			&cli.StringFlag{
 				Name:        command.OUTPUT,
