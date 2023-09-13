@@ -23,6 +23,8 @@ func CMDHandler(ctx *cli.Context) error {
 	//	url := handlers.Upload(input_file_path)
 	data, err := os.Open(input_file_path)
 	errorhandlers.HandleError(err)
+	defer data.Close()
+	handlers.CheckFileTypeHandler(data)
 	text := handlers.ExtractText(data)
 	//handlers.OutputJson(text, input_file_path)
 
