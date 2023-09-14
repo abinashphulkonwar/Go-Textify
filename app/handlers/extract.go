@@ -39,7 +39,8 @@ func GetApiData() api_data_schema {
 	return api_data
 }
 
-func ExtractText(data io.ReadCloser) []TextComponent {
+func ExtractText(data io.ReadCloser, url string, IS_UPLOAD bool) []TextComponent {
+	println("processing")
 	api_data := GetApiData()
 	computerVisionKey := api_data.Key
 	endpointURL := api_data.Url
@@ -49,9 +50,18 @@ func ExtractText(data io.ReadCloser) []TextComponent {
 	computerVisionClient.Authorizer = autorest.NewCognitiveServicesAuthorizer(computerVisionKey)
 
 	computerVisionContext = context.Background()
+	var ocrResult computervision.OcrResult
+	var err error
+	if IS_UPLOAD {
+		ocrResult, err = computerVisionClient.RecognizePrintedText(computerVisionContext, true, computervision.ImageURL{URL: &url}, computervision.En)
 
-	ocrResult, err := computerVisionClient.RecognizePrintedTextInStream(computerVisionContext, true, data, computervision.En)
+	} else {
+
+		ocrResult, err = computerVisionClient.RecognizePrintedTextInStream(computerVisionContext, true, data, computervision.En)
+	}
 	errorhandlers.HandleError(err)
+
+	println("processed")
 
 	fmt.Printf("Text angle: %.4f\n", *ocrResult.TextAngle)
 	textList := []TextComponent{}
