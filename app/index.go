@@ -15,17 +15,24 @@ func CMDHandler(ctx *cli.Context) error {
 	}
 	input_file_path := ctx.String(command.INPUT)
 	output_file_path := ctx.String(command.OUTPUT)
-
+	isUpload := ctx.String(command.IS_UPLOAD)
 	if input_file_path == "" {
 		panic("file is emply")
 	}
+	handlers.CheckFileTypeHandler(input_file_path)
 
-	//	url := handlers.Upload(input_file_path)
 	data, err := os.Open(input_file_path)
 	errorhandlers.HandleError(err)
 	defer data.Close()
-	handlers.CheckFileTypeHandler(data)
-	text := handlers.ExtractText(data)
+
+	url := ""
+	isUploadState := false
+	if isUpload == "true" {
+		isUploadState = true
+		url = handlers.Upload(input_file_path)
+	}
+
+	text := handlers.ExtractText(data, url, isUploadState)
 	//handlers.OutputJson(text, input_file_path)
 
 	handlers.OutputTextFile(text, output_file_path)
