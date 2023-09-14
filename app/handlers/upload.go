@@ -18,7 +18,7 @@ const URL = "https://" + ACCOUNT_NAME + ".blob.core.windows.net/"
 const CONTAINER_NAME = "peace-and-conflicts-resolution"
 
 func Upload(path string) string {
-
+	println("file is uploading")
 	data, err := os.ReadFile(path)
 	errorhandlers.HandleError(err)
 
@@ -34,6 +34,8 @@ func Upload(path string) string {
 
 	_, err = client.UploadBuffer(ctx, CONTAINER_NAME, "blobName", data, &azblob.UploadBufferOptions{})
 	errorhandlers.HandleError(err)
+	println("file is uploaded")
+
 	now := time.Now()
 	exp := now.Add(time.Minute * 10)
 
