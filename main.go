@@ -27,6 +27,13 @@ func main() {
 				Usage:       "input file will be a .txt file with ***new page*** separated the pages",
 				DefaultText: "output",
 			},
+			&cli.StringFlag{
+				Name:        command.IS_UPLOAD,
+				Value:       "upload",
+				Aliases:     []string{"u"},
+				Usage:       "should input file to be stored in azure",
+				DefaultText: "false",
+			},
 		},
 	}
 
